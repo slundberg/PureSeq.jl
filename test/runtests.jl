@@ -20,4 +20,4 @@ reader = BamReader("data/small.bam", true, ReferenceContigs_hg38)
 while reader.position != -1
 	advance!(reader)
 end
-close(reader)
+close(reader) 
