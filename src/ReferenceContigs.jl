@@ -1,4 +1,4 @@
-export ReferenceContigs, contigsHg38
+export ReferenceContigs, ReferenceContigs_hg38
 
 type ReferenceContigs
     count::Int64
@@ -11,7 +11,7 @@ type ReferenceContigs
     end
 end
 
-contigsHg38 = ReferenceContigs(455, [
+ReferenceContigs_hg38 = ReferenceContigs(455, [
     "chr1", "chr10", "chr11", "chr11_KI270721v1_random", "chr12", "chr13", "chr14", "chr14_GL000009v2_random", 
     "chr14_GL000225v1_random", "chr14_KI270722v1_random", "chr14_GL000194v1_random", "chr14_KI270723v1_random",
     "chr14_KI270724v1_random", "chr14_KI270725v1_random", "chr14_KI270726v1_random", "chr15", "chr15_KI270727v1_random", 

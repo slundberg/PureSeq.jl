@@ -1,3 +1,5 @@
+using GZip
+
 export BamReader, close, advance!
 
 type BamReader
