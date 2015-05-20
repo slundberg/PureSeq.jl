@@ -7,6 +7,7 @@ type BamReader
     useReverseReads::Bool
     done::Bool
     position::Int64
+    value::Float64
     contigs::ReferenceContigs
 end
 
@@ -32,7 +33,7 @@ function BamReader(bamFileName::ASCIIString, useReverseReads, contigs)
         @assert refName == contigs.names[j]
     end
     
-    r = BamReader(f, useReverseReads, false, 1, contigs)
+    r = BamReader(f, useReverseReads, false, 1, 1.0, contigs)
     advance!(r)
     r
 end
