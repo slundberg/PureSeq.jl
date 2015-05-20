@@ -1,13 +1,12 @@
 using GZip
 
-export BamReader, close, advance!
+export BamReader, close, position, value, eof, advance!, eachposition
 
 type BamReader
     bamStream
     useReverseReads::Bool
     done::Bool
     position::Int64
-    value::Float64
     contigs::ReferenceContigs
 end
 
@@ -33,13 +32,14 @@ function BamReader(bamFileName::ASCIIString, useReverseReads, contigs)
         @assert refName == contigs.names[j]
     end
     
-    r = BamReader(f, useReverseReads, false, 1, 1.0, contigs)
+    r = BamReader(f, useReverseReads, false, 1, contigs)
     advance!(r)
     r
 end
-function close(reader::BamReader)
-    GZip.close(reader.bamStream)
-end
+close(reader::BamReader) = GZip.close(reader.bamStream)
+value(reader::BamReader) = 1
+position(reader::BamReader) = reader.position
+eof(reader::BamReader) = reader.position == -1
 
 function advance!(r::BamReader)
     f = r.bamStream
@@ -68,4 +68,17 @@ function advance!(r::BamReader)
             return
         end
     end
+end
+
+# here we want to update the reader
+eachposition(r::BamReader) = BamReaderIterator(r)
+immutable BamReaderIterator
+	reader::BamReader
+end
+Base.start(it::BamReaderIterator) = it.reader.position
+Base.done(it::BamReaderIterator, position) = position == -1
+function Base.next(it::BamReaderIterator, position)
+	pos = it.reader.position
+	advance!(it.reader)
+	pos,it.reader.position
 end
