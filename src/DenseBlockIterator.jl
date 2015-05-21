@@ -1,0 +1,53 @@
+export denseblocks
+
+type DenseBlockIterator
+    readers::Array{Any}
+    blockSize::Int64
+    blockWidth::Int64
+    block::Array{Float64,2}
+    offset::Int64
+    done::Bool
+    constantColumn::Bool
+end
+function denseblocks(readers, blockSize::Int64; constantColumn=false)
+    blockWidth = constantColumn ? length(readers) + 1 : length(readers)
+    block = ones(Float64, blockSize, blockWidth)
+    if constantColumn
+        block[:,end] = 1.0
+    end
+    DenseBlockIterator(readers, blockSize, blockWidth, block, 0, false, constantColumn)
+end
+Base.start(it::DenseBlockIterator) = 0
+Base.done(it::DenseBlockIterator, nil) = it.done
+function Base.next(it::DenseBlockIterator, nil)
+    it.done = true
+    
+    if it.constantColumn
+        it.block[:,1:end-1] = 0.0
+    else
+        it.block[:,:] = 0.0
+    end
+
+    # Fill in the block
+    for i in 1:length(it.readers)
+        reader = it.readers[i]
+
+        while !eof(reader) && position(reader) <= it.offset + it.blockSize
+            it.block[reader.position - it.offset, i] += value(reader)
+            advance!(reader)
+            it.done = false
+        end
+    end
+
+    # See if we are really done or just found a blank block
+    if it.done
+        for i in 1:length(it.readers)
+            it.done = it.done && eof(it.readers[i])
+        end
+    end
+    
+    # update the offset
+    it.offset += it.blockSize
+
+    it.block,nothing
+end

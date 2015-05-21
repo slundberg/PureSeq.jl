@@ -45,3 +45,26 @@ while !eof(fm)
 	advance!(fm)
 end
 close(fm)
+
+## DenseBlockIterator
+
+# test forward reads
+fm1 = FeatureMap(BamReader("data/small.bam", false, ReferenceContigs_hg38), ones(21)*2)
+fm2 = FeatureMap(BamReader("data/small.bam", false, ReferenceContigs_hg38), ones(21))
+count = 0
+for block in denseblocks([fm1, fm2], 100)
+	if count == 105
+		@test block[33,1] == 0.0
+		@test block[33,2] == 0.0
+		@test block[34,1] == 2.0
+		@test block[34,2] == 1.0
+		@test block[54,1] == 2.0
+		@test block[54,2] == 1.0
+		@test block[55,1] == 0.0
+		@test block[55,2] == 0.0
+	end
+	count += 1
+	if count > 120 break end
+end
+close(fm1)
+close(fm2)
