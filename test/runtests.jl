@@ -68,3 +68,15 @@ for block in denseblocks([fm1, fm2], 100)
 end
 close(fm1)
 close(fm2)
+
+# test infinite looping of blocks
+fm1 = FeatureMap(BamReader("data/small.bam", false, ReferenceContigs_hg38), ones(21)*2)
+fm2 = FeatureMap(BamReader("data/small.bam", false, ReferenceContigs_hg38), ones(21))
+count = 0
+for block in denseblocks([fm1, fm2], 1000, loop=true)
+	count += 1
+	if count > 12000 break end
+end
+@test count == 12001
+close(fm1)
+close(fm2)
