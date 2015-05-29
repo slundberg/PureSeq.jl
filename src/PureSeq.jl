@@ -6,5 +6,6 @@ include("FeatureMap.jl")
 include("DenseBlockIterator.jl")
 include("SamWriter.jl")
 include("BinningMap.jl")
+include("BinnedReader.jl")
 
 end

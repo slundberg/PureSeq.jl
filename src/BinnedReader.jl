@@ -1,0 +1,37 @@
+import Base: eof, close
+export BinnedReader, close, position, value, eof, advance!, write_binned
+
+type BinnedReader
+    fileStream
+    pair::Array{Uint32}
+end
+
+function BinnedReader(fileName::ASCIIString)
+    f = open(fileName)
+    br = BinnedReader(f, zeros(Uint32, 2))
+    advance!(br)
+    br
+end
+close(br::BinnedReader) = close(br.fileStream)
+value(br::BinnedReader) = br.pair[2]
+position(br::BinnedReader) = br.pair[1]
+eof(br::BinnedReader) = br.pair[1] == 0
+
+function advance!(br::BinnedReader)
+    if !eof(br.fileStream)
+        read!(br.fileStream, br.pair)
+    else
+        br.pair[1] = 0 # mark that we are at eof
+    end
+end
+
+function write_binned(bamFile::ASCIIString, binSize::Int64, useReverseReads::Bool)
+    bm = BinningMap(BamReader(bamFile, useReverseReads, ReferenceContigs_hg38), binSize)
+    out = open(bamFile*"."*(useReverseReads ? "r" : "f")*"bin$binSize", "w")
+    while !eof(bm)
+        write(out, uint32(bm.position))
+        write(out, uint32(bm.value))
+        advance!(bm)
+    end
+    close(out)
+end

@@ -91,17 +91,17 @@ sw = SamWriter(f, ReferenceContigs_hg38)
 writeRead(sw, 10, 16)
 
 
-## BinningMap
+## write_binned and BinnedReader
 
 # test forward reads
-reader = BamReader("data/small.bam", false, ReferenceContigs_hg38)
-fm = BinningMap(reader, 1000)
-@test position(fm) == 11 # where data first enters the window
-@test value(fm) == 1.0
-while !eof(fm)
-	if position(fm) == 12
-		@test value(fm) == 4.0
+write_binned("data/small.bam", 1000, false)
+reader = BinnedReader("data/small.bam.fbin1000")
+@test position(reader) == 11 # where data first enters the window
+@test value(reader) == 1.0
+while !eof(reader)
+	if position(reader) == 12
+		@test value(reader) == 4.0
 	end
-	advance!(fm)
+	advance!(reader)
 end
-close(fm)
+close(reader)
