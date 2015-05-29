@@ -1,6 +1,7 @@
 using PureSeq
 using Base.Test
 
+
 ## BamReader
 
 # test forward reads
@@ -46,6 +47,7 @@ while !eof(fm)
 end
 close(fm)
 
+
 ## DenseBlockIterator
 
 # test forward reads
@@ -80,3 +82,28 @@ end
 @test count == 12001
 close(fm1)
 close(fm2)
+
+
+## SamWriter
+
+f = open("data/tmp.sam", "w")
+sw = SamWriter(f, ReferenceContigs_hg38)
+writeRead(sw, 10, 16)
+
+
+## BinningMap
+
+# test forward reads
+reader = BamReader("data/small.bam", false, ReferenceContigs_hg38)
+fm = BinningMap(reader, 1000)
+println(position(fm))
+@test position(fm) == 11 # where data first enters the window
+@test value(fm) == 1.0
+while !eof(fm)
+	if position(fm) == 12
+		println(value(fm))
+		@test value(fm) == 4.0
+	end
+	advance!(fm)
+end
+close(fm)
