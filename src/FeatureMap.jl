@@ -1,5 +1,6 @@
 using DataStructures
 
+import Base: eof, close
 export FeatureMap, close, value, position, eof, advance!
 
 type FeatureMap

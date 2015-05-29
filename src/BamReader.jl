@@ -1,5 +1,6 @@
 using GZip
 
+import Base: eof, close
 export BamReader, close, position, value, eof, advance!, eachposition
 
 type BamReader
