@@ -36,7 +36,7 @@ function Base.next(it::DenseBlockIterator, nil)
             reader = it.readers[i]
 
             while !eof(reader) && position(reader) <= it.offset + it.blockSize
-                it.block[reader.position - it.offset, i] += value(reader)
+                it.block[position(reader) - it.offset, i] += value(reader)
                 advance!(reader)
                 foundRead = true
             end
