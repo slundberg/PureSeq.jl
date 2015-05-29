@@ -96,12 +96,10 @@ writeRead(sw, 10, 16)
 # test forward reads
 reader = BamReader("data/small.bam", false, ReferenceContigs_hg38)
 fm = BinningMap(reader, 1000)
-println(position(fm))
 @test position(fm) == 11 # where data first enters the window
 @test value(fm) == 1.0
 while !eof(fm)
 	if position(fm) == 12
-		println(value(fm))
 		@test value(fm) == 4.0
 	end
 	advance!(fm)
