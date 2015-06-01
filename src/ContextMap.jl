@@ -4,7 +4,7 @@ import Base: eof, close
 export ContextMap, close, value, position, eof, advance!
 
 type ContextMap
-    reader::BamReader
+    reader
     contextBefore::Int64
     contextAfter::Int64
     position::Int64
@@ -12,7 +12,7 @@ type ContextMap
     value::Float64
 end
 
-function ContextMap(reader::BamReader, contextBefore, contextAfter)
+function ContextMap(reader, contextBefore::Int64, contextAfter::Int64)
     cm = ContextMap(reader, contextBefore, contextAfter, 0, Deque{Int64}(), 0.0)
     
     advance!(cm)
