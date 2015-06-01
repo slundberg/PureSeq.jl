@@ -48,6 +48,22 @@ end
 close(fm)
 
 
+## ContextMap
+
+# test forward reads
+reader = BamReader("data/small.bam", false, ReferenceContigs_hg38)
+fm = ContextMap(reader, 1000, 1000)
+@test position(fm) == 9544 # where data first enters the window
+@test value(fm) == 1.0
+while !eof(fm)
+	if position(fm) == 10544
+		@test value(fm) == 3.0
+	end
+	advance!(fm)
+end
+close(fm)
+
+
 ## DenseBlockIterator
 
 # test forward reads
