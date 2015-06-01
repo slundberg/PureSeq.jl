@@ -69,14 +69,14 @@ function writeBin(sw::Sam_Writer, binSize::Int64, binPos::Int64, numReads::Int64
     
     if numReads >= binSize
         for j in 1:binSize
-            writeRead(sw, binSize*(binPos-1)+j, 0)
+            writeRead(sw, binSize*(binPos-1)+j, FLAG)
         end
     else
         indecies = sort(sample(1:binSize, numReads, replace=false))
      
         #write to sw
         for j in 1:length(indecies)
-            writeRead(sw, binSize*(binPos-1)+indecies[j], 0)
+            writeRead(sw, binSize*(binPos-1)+indecies[j], FLAG)
         end
     end
 end
