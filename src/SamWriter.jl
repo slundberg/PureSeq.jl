@@ -64,3 +64,19 @@ function writeRead(sw::Sam_Writer, POS::Int64, FLAG::Int64; MAPQ::Int64=15, LENG
     output = "$(QNAME)\t$(FLAG)\t$(RNAME)\t$(POS)\t$(MAPQ)\t$(CIGAR)\t$(RNEXT)\t$(PNEXT)\t$(TLEN)\t$(SEQ)\t$(QUAL)\n"
     write(sw.Outstream, output)
 end
+
+function writeBin(sw::Sam_Writer, binSize::Int64, binPos::Int64, numReads::Int64, FLAG::Int64)
+    
+    if numReads >= binSize
+        for j in 1:binSize
+            writeRead(sw, binSize*(binPos-1)+j, 0)
+        end
+    else
+        indecies = sort(sample(1:binSize, numReads, replace=false))
+     
+        #write to sw
+        for j in 1:length(indecies)
+            writeRead(sw, binSize*(binPos-1)+indecies[j], 0)
+        end
+    end
+end
