@@ -34,13 +34,13 @@ function advance!(cm::ContextMap)
     
     # skip ahead to the next spot we have data if our queue is empty
     if length(cm.posQueue) == 0
-        cm.position = cm.reader.position-cm.contextBefore
+        cm.position = position(cm.reader)-cm.contextBefore
     end
     
     # add new positions in the sliding window
-    while cm.reader.position != -1 && cm.reader.position <= cm.position+cm.contextAfter
+    while position(cm.reader) != -1 && position(cm.reader) <= cm.position+cm.contextAfter
         cm.value += 1 # assume all positions have value of one!
-        push!(cm.posQueue, cm.reader.position) 
+        push!(cm.posQueue, position(cm.reader)) 
         advance!(cm.reader)
     end
 end
