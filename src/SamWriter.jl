@@ -64,7 +64,7 @@ function writeRead(sw::SamWriter, POS::Int64, FLAG::Int64; MAPQ::Int64=15, LENGT
     #QUAL = "*"
     
     #output = "$(QNAME)\t$(FLAG)\t$(RNAME)\t$(POS)\t$(MAPQ)\t$(CIGAR)\t$(RNEXT)\t$(PNEXT)\t$(TLEN)\t$(SEQ)\t$(QUAL)\n"
-    write(sw.Outstream, "PureSeq\t",FLAG,"\t",RNAME,"\t",POS,"\t",MAPQ,"\t",CIGAR,"\t*\t0\t0\t*\t*")
+    println(sw.Outstream, "PureSeq\t",FLAG,"\t",RNAME,"\t",POS,"\t",MAPQ,"\t",CIGAR,"\t*\t0\t0\t*\t*")
 end
 
 function writeBin(sw::SamWriter, binSize::Int64, binPos::Int64, numReads::Int64, FLAG::Int64)
