@@ -8,12 +8,12 @@ type ContextMap
     contextBefore::Int64
     contextAfter::Int64
     position::Int64
-    posQueue::Deque{Int64}
+    posQueue::Deque{(Int64,Float64)}
     value::Float64
 end
 
 function ContextMap(reader, contextBefore::Int64, contextAfter::Int64)
-    cm = ContextMap(reader, contextBefore, contextAfter, 0, Deque{Int64}(), 0.0)
+    cm = ContextMap(reader, contextBefore, contextAfter, 0, Deque{(Int64,Float64)}(), 0.0)
     
     advance!(cm)
     cm
@@ -27,9 +27,9 @@ function advance!(cm::ContextMap)
     cm.position += 1
     
     # remove old positions that fell outside the sliding window
-    while length(cm.posQueue) > 0 && front(cm.posQueue) < cm.position-cm.contextBefore
+    while length(cm.posQueue) > 0 && front(cm.posQueue)[1] < cm.position-cm.contextBefore
+        cm.value -= front(cm.posQueue)[2]
         shift!(cm.posQueue)
-        cm.value -= 1 # assume all positions have value of one!
     end
     
     # skip ahead to the next spot we have data if our queue is empty
@@ -39,8 +39,9 @@ function advance!(cm::ContextMap)
     
     # add new positions in the sliding window
     while position(cm.reader) != -1 && position(cm.reader) <= cm.position+cm.contextAfter
-        cm.value += 1 # assume all positions have value of one!
-        push!(cm.posQueue, position(cm.reader)) 
+        v = value(cm.reader)
+        cm.value += v
+        push!(cm.posQueue, (position(cm.reader),v))
         advance!(cm.reader)
     end
 end
