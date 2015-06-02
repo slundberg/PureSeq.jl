@@ -48,22 +48,6 @@ end
 close(fm)
 
 
-## ContextMap
-
-# test forward reads
-reader = BamReader("data/small.bam", false, ReferenceContigs_hg38)
-fm = ContextMap(reader, 1000, 1000)
-@test position(fm) == 9544 # where data first enters the window
-@test value(fm) == 1.0
-while !eof(fm)
-	if position(fm) == 10544
-		@test value(fm) == 3.0
-	end
-	advance!(fm)
-end
-close(fm)
-
-
 ## DenseBlockIterator
 
 # test forward reads
@@ -105,7 +89,7 @@ close(fm2)
 f = open("data/tmp.sam", "w")
 sw = SamWriter(f, ReferenceContigs_hg38)
 writeRead(sw, 10, 16)
-
+close(f)
 
 ## write_binned and BinnedReader
 
@@ -121,3 +105,32 @@ while !eof(reader)
 	advance!(reader)
 end
 close(reader)
+
+
+## ContextMap
+
+# test forward reads
+reader = BamReader("data/small.bam", false, ReferenceContigs_hg38)
+cm = ContextMap(reader, 1000, 1000)
+@test position(cm) == 9544 # where data first enters the window
+@test value(cm) == 1.0
+while !eof(cm)
+	if position(cm) == 10544
+		@test value(cm) == 3.0
+	end
+	advance!(cm)
+end
+close(cm)
+
+# test bins
+reader = BinnedReader("data/small.bam.fbin1000")
+cm = ContextMap(reader, 2, 2)
+@test position(cm) == 9 # where data first enters the window
+@test value(cm) == 1.0
+while !eof(cm)
+	if position(cm) == 12
+		@test value(cm) == 13.0
+	end
+	advance!(cm)
+end
+close(cm)

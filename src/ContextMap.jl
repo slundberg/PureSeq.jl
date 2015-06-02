@@ -38,7 +38,7 @@ function advance!(cm::ContextMap)
     end
     
     # add new positions in the sliding window
-    while position(cm.reader) != -1 && position(cm.reader) <= cm.position+cm.contextAfter
+    while !eof(cm.reader) && position(cm.reader) <= cm.position+cm.contextAfter
         v = value(cm.reader)
         cm.value += v
         push!(cm.posQueue, (position(cm.reader),v))
