@@ -34,7 +34,7 @@ function writeHeader(sw::SamWriter)
     write(sw.Outstream, "@PG\tID:PureSeq\tPN:PureSeq\n")
 end
 
-function writeRead(sw::SamWriter, POS::Int64, FLAG::Int64; MAPQ::Int64=15, LENGTH::Int64=0)
+function writeRead(sw::SamWriter, POS::Int64, FLAG::Int64; MAPQ::Int64=15, LENGTH::Int64=36)
 
     #Figure out the ref_name
     while POS > sw.contigs.offsets[sw.cur_ref]+sw.contigs.sizes[sw.cur_ref]
@@ -51,12 +51,12 @@ function writeRead(sw::SamWriter, POS::Int64, FLAG::Int64; MAPQ::Int64=15, LENGT
         return -1 
     end
     
-    MAPQ = MAPQ
-    if LENGTH == 0
-        CIGAR = "*"
-    else
-        CIGAR = LENGTH+"M"
-    end
+    #MAPQ = MAPQ
+    # if LENGTH == 0
+    #     CIGAR = "*"
+    # else
+    #     CIGAR = LENGTH+"M"
+    # end
     #RNEXT = "*"
     #PNEXT = 0
     #TLEN = 0
@@ -64,7 +64,7 @@ function writeRead(sw::SamWriter, POS::Int64, FLAG::Int64; MAPQ::Int64=15, LENGT
     #QUAL = "*"
     
     #output = "$(QNAME)\t$(FLAG)\t$(RNAME)\t$(POS)\t$(MAPQ)\t$(CIGAR)\t$(RNEXT)\t$(PNEXT)\t$(TLEN)\t$(SEQ)\t$(QUAL)\n"
-    println(sw.Outstream, "PureSeq\t",FLAG,"\t",RNAME,"\t",POS,"\t",MAPQ,"\t",CIGAR,"\t*\t0\t0\t*\t*")
+    println(sw.Outstream, "PureSeq\t",FLAG,"\t",RNAME,"\t",POS,"\t",MAPQ,"\t",LENGTH,"M\t*\t0\t0\t*\t*")
 end
 
 function writeBin(sw::SamWriter, binSize::Int64, binPos::Int64, numReads::Int64, FLAG::Int64)
