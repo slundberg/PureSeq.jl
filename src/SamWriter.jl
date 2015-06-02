@@ -9,22 +9,22 @@ writeRead(sw, 100, 16)
 writeRead(sw, 500000000, 16)
 =#
 
-type Sam_Writer
+type SamWriter
     #a output stream object to write to
     Outstream
     contigs::ReferenceContigs
     cur_ref::Int64
 end
 
-#constructor for sam_Writer. 
+#constructor for samWriter. 
 #Automatically writes the header as it is instantiated
 function SamWriter(output_stream, contigs)
-    sw = Sam_Writer(output_stream, contigs, 1)
+    sw = SamWriter(output_stream, contigs, 1)
     writeHeader(sw)
     sw
 end
 
-function writeHeader(sw::Sam_Writer)
+function writeHeader(sw::SamWriter)
     write(sw.Outstream, "@HD\tVN:1.0\tSO:coordinate\n")
     for j in 1:sw.contigs.count
         name = sw.contigs.names[j]
@@ -34,7 +34,7 @@ function writeHeader(sw::Sam_Writer)
     write(sw.Outstream, "@PG\tID:PureSeq\tPN:PureSeq\n")
 end
 
-function writeRead(sw::Sam_Writer, POS::Int64, FLAG::Int64; MAPQ::Int64=15, LENGTH::Int64=0)
+function writeRead(sw::SamWriter, POS::Int64, FLAG::Int64; MAPQ::Int64=15, LENGTH::Int64=0)
 
     #Figure out the ref_name
     while POS > sw.contigs.offsets[sw.cur_ref]+sw.contigs.sizes[sw.cur_ref]
@@ -67,7 +67,7 @@ function writeRead(sw::Sam_Writer, POS::Int64, FLAG::Int64; MAPQ::Int64=15, LENG
     write(sw.Outstream, "PureSeq\t",FLAG,"\t",RNAME,"\t",POS,"\t",MAPQ,"\t",CIGAR,"\t*\t0\t0\t*\t*")
 end
 
-function writeBin(sw::Sam_Writer, binSize::Int64, binPos::Int64, numReads::Int64, FLAG::Int64)
+function writeBin(sw::SamWriter, binSize::Int64, binPos::Int64, numReads::Int64, FLAG::Int64)
     
     if numReads >= binSize
         for j in 1:binSize
