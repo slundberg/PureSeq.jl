@@ -20,7 +20,9 @@ close(reader)
 
 # test reading through a whole file
 reader = BamReader("data/small.bam", true, ReferenceContigs_hg38)
+lastPos = -1
 while !eof(reader)
+	lastPos = position(reader)
 	advance!(reader)
 end
 close(reader)
@@ -94,10 +96,23 @@ close(f)
 ## write_binned and BinnedReader
 
 # test forward reads
-write_binned("data/small.bam", 1000, false)
-reader = BinnedReader("data/small.bam.fbin1000")
+write_binned("data/small.bam", 1000, true, skipDup=false)
+reader = BinnedReader("data/small.bam.rbin1000")
 @test position(reader) == 11 # where data first enters the window
-@test value(reader) == 1.0
+@test value(reader) == 3.0
+
+while !eof(reader)
+	if position(reader) == 12
+		@test value(reader) == 5.0
+	end
+	advance!(reader)
+end
+
+# now skip duplicate reads
+write_binned("data/small.bam", 1000, true, skipDup=true)
+reader = BinnedReader("data/small.bam.rbin1000")
+@test position(reader) == 11 # where data first enters the window
+@test value(reader) == 3.0
 while !eof(reader)
 	if position(reader) == 12
 		@test value(reader) == 4.0
