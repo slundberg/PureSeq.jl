@@ -1,4 +1,6 @@
-export SamWriter, writeHeader, writeRead
+using StatsBase
+
+export SamWriter, writeHeader, writeRead, writeBin
 
 #=
 USAGE:
@@ -72,11 +74,11 @@ function writeBin(sw::Sam_Writer, binSize::Int64, binPos::Int64, numReads::Int64
             writeRead(sw, binSize*(binPos-1)+j, FLAG)
         end
     else
-        indecies = sort(sample(1:binSize, numReads, replace=false))
-     
+        indices = sort(sample(1:binSize, numReads, replace=false))
+        
         #write to sw
-        for j in 1:length(indecies)
-            writeRead(sw, binSize*(binPos-1)+indecies[j], FLAG)
+        for j in 1:length(indices)
+            writeRead(sw, binSize*(binPos-1)+indices[j], FLAG)
         end
     end
 end
