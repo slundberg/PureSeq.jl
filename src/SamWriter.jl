@@ -1,4 +1,4 @@
-using StatsBase
+using StatsBase.sample
 
 export SamWriter, writeHeader, writeRead, writeBin
 
