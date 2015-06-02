@@ -1,3 +1,5 @@
+export Poisson_Regression, predict, fit
+
 type poissonRegression
     #array of weights
     w
