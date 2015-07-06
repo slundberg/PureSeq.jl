@@ -5,21 +5,21 @@ using Base.Test
 ## BamReader
 
 # test forward reads
-reader = BamReader("data/small.bam", false, ReferenceContigs_hg38)
+reader = BamReader("data/small.bam", :forward, ReferenceContigs_hg38)
 @test position(reader) == 10544
 advance!(reader)
 @test position(reader) == 11247
 close(reader)
 
 # test reverse reads
-reader = BamReader("data/small.bam", true, ReferenceContigs_hg38)
+reader = BamReader("data/small.bam", :reverse, ReferenceContigs_hg38)
 @test position(reader) == 10056
 advance!(reader)
 @test position(reader) == 10102
 close(reader)
 
 # test reading through a whole file
-reader = BamReader("data/small.bam", true, ReferenceContigs_hg38)
+reader = BamReader("data/small.bam", :any, ReferenceContigs_hg38)
 lastPos = -1
 while !eof(reader)
 	lastPos = position(reader)
@@ -28,7 +28,7 @@ end
 close(reader)
 
 # test reading through a whole file with an iterator
-reader = BamReader("data/small.bam", true, ReferenceContigs_hg38)
+reader = BamReader("data/small.bam", :reverse, ReferenceContigs_hg38)
 for pos in eachposition(reader)
 end
 close(reader)
@@ -37,7 +37,7 @@ close(reader)
 ## FeatureMap
 
 # test forward reads
-reader = BamReader("data/small.bam", false, ReferenceContigs_hg38)
+reader = BamReader("data/small.bam", :forward, ReferenceContigs_hg38)
 fm = FeatureMap(reader, ones(2001))
 @test position(fm) == 9544 # where data first enters the window
 @test value(fm) == 1.0
@@ -53,8 +53,8 @@ close(fm)
 ## DenseBlockIterator
 
 # test forward reads
-fm1 = FeatureMap(BamReader("data/small.bam", false, ReferenceContigs_hg38), ones(21)*2)
-fm2 = FeatureMap(BamReader("data/small.bam", false, ReferenceContigs_hg38), ones(21))
+fm1 = FeatureMap(BamReader("data/small.bam", :forward, ReferenceContigs_hg38), ones(21)*2)
+fm2 = FeatureMap(BamReader("data/small.bam", :forward, ReferenceContigs_hg38), ones(21))
 count = 0
 for block in denseblocks([fm1, fm2], 100)
 	if count == 105
@@ -74,8 +74,8 @@ close(fm1)
 close(fm2)
 
 # test infinite looping of blocks
-fm1 = FeatureMap(BamReader("data/small.bam", false, ReferenceContigs_hg38), ones(21)*2)
-fm2 = FeatureMap(BamReader("data/small.bam", false, ReferenceContigs_hg38), ones(21))
+fm1 = FeatureMap(BamReader("data/small.bam", :forward, ReferenceContigs_hg38), ones(21)*2)
+fm2 = FeatureMap(BamReader("data/small.bam", :forward, ReferenceContigs_hg38), ones(21))
 count = 0
 for block in denseblocks([fm1, fm2], 1000, loop=true)
 	count += 1
@@ -96,7 +96,7 @@ close(f)
 ## write_binned and BinnedReader
 
 # test forward reads
-write_binned("data/small.bam", 1000, true, skipDup=false)
+write_binned("data/small.bam", 1000, :reverse, skipDup=false)
 reader = BinnedReader("data/small.bam.rbin1000")
 @test position(reader) == 11 # where data first enters the window
 @test value(reader) == 3.0
@@ -109,7 +109,7 @@ while !eof(reader)
 end
 
 # now skip duplicate reads
-write_binned("data/small.bam", 1000, true, skipDup=true)
+write_binned("data/small.bam", 1000, :reverse, skipDup=true)
 reader = BinnedReader("data/small.bam.rbin1000")
 @test position(reader) == 11 # where data first enters the window
 @test value(reader) == 3.0
@@ -125,7 +125,7 @@ close(reader)
 ## ContextMap
 
 # test forward reads
-reader = BamReader("data/small.bam", false, ReferenceContigs_hg38)
+reader = BamReader("data/small.bam", :forward, ReferenceContigs_hg38)
 cm = ContextMap(reader, 1000, 1000)
 @test position(cm) == 9544 # where data first enters the window
 @test value(cm) == 1.0

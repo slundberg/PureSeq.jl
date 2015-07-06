@@ -5,13 +5,13 @@ export BamReader, close, position, value, eof, advance!, eachposition
 
 type BamReader
     bamStream
-    useReverseReads::Bool
+    readOrientation #useReverseReads::Bool
     done::Bool
     position::Int64
     contigs::ReferenceContigs
 end
 
-function BamReader(bamFileName::ASCIIString, useReverseReads, contigs)
+function BamReader(bamFileName::ASCIIString, readOrientation, contigs)
     f = GZip.open(bamFileName)
     
     # make sure this is a BAM file
@@ -33,7 +33,7 @@ function BamReader(bamFileName::ASCIIString, useReverseReads, contigs)
         @assert refName == contigs.names[j]
     end
     
-    r = BamReader(f, useReverseReads, false, 1, contigs)
+    r = BamReader(f, readOrientation, false, 1, contigs)
     advance!(r)
     r
 end
@@ -65,7 +65,7 @@ function advance!(r::BamReader)
         skip(f, block_size-16) # skip the rest of the entry
         
         # break if we found a read in the right direction
-        if refID != 0 && ((forward && !r.useReverseReads) || (!forward && r.useReverseReads))
+        if refID != 0 && (r.readOrientation == :any || (forward && r.readOrientation == :forward) || (!forward && r.readOrientation == :reverse))
             return
         end
     end

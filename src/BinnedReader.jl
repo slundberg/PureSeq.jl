@@ -25,9 +25,9 @@ function advance!(br::BinnedReader)
     end
 end
 
-function write_binned(bamFile::ASCIIString, binSize::Int64, useReverseReads::Bool; skipDup=true)
-    bm = BinningMap(BamReader(bamFile, useReverseReads, ReferenceContigs_hg38), binSize, skipDup=skipDup)
-    out = open(bamFile*"."*(useReverseReads ? "r" : "f")*"bin$binSize", "w")
+function write_binned(bamFile::ASCIIString, binSize::Int64, readOrientation; skipDup=true)
+    bm = BinningMap(BamReader(bamFile, readOrientation, ReferenceContigs_hg38), binSize, skipDup=skipDup)
+    out = open(bamFile*"."*(readOrientation == :reverse ? "r" : (readOrientation == :forward ? "f" : "a"))*"bin$binSize", "w")
     while !eof(bm)
         write(out, uint32(bm.position))
         write(out, uint32(bm.value))
