@@ -1,7 +1,7 @@
 using DataStructures
 
-import Base: eof, close
-export FeatureMap, close, value, position, eof, advance!
+import Base: eof, close, position
+export FeatureMap, close, value, eof, advance!
 
 type FeatureMap
     reader::BamReader
@@ -14,7 +14,7 @@ end
 
 function FeatureMap(reader::BamReader, feature)
     fm = FeatureMap(reader, feature, (length(feature)-1)/2, 0, Deque{Int64}(), 0.0)
-    
+
     advance!(fm)
     fm
 end
@@ -25,12 +25,12 @@ eof(fm::FeatureMap) = fm.position < 0
 
 function advance!(fm::FeatureMap)
     fm.position += 1
-    
+
     # remove old positions that fell outside the sliding window
     while length(fm.posQueue) > 0 && front(fm.posQueue) < fm.position-fm.featureWidth
         shift!(fm.posQueue)
     end
-    
+
     # skip ahead to the next spot we have data if our queue is empty
     if length(fm.posQueue) == 0
         fm.position = fm.reader.position-fm.featureWidth
@@ -41,7 +41,7 @@ function advance!(fm::FeatureMap)
         push!(fm.posQueue, fm.reader.position)
         advance!(fm.reader)
     end
-    
+
     # compute the feature value for this position
     fm.value = 0
     for pos in fm.posQueue

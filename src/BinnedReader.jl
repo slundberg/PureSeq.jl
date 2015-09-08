@@ -29,8 +29,8 @@ function write_binned(bamFile::ASCIIString, binSize::Int64, readOrientation; ski
     bm = BinningMap(BamReader(bamFile, readOrientation, ReferenceContigs_hg38), binSize, skipDup=skipDup)
     out = open(bamFile*"."*(readOrientation == :reverse ? "r" : (readOrientation == :forward ? "f" : "a"))*"bin$binSize", "w")
     while !eof(bm)
-        write(out, uint32(bm.position))
-        write(out, uint32(bm.value))
+        write(out, UInt32(bm.position))
+        write(out, UInt32(bm.value))
         advance!(bm)
     end
     close(out)
