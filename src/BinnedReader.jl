@@ -3,12 +3,12 @@ export BinnedReader, close, position, value, eof, advance!, write_binned
 
 type BinnedReader
     fileStream
-    pair::Array{Uint32}
+    pair::Array{UInt32}
 end
 
 function BinnedReader(fileName::ASCIIString)
     f = open(fileName)
-    br = BinnedReader(f, zeros(Uint32, 2))
+    br = BinnedReader(f, zeros(UInt32, 2))
     advance!(br)
     br
 end

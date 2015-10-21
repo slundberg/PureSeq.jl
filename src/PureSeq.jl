@@ -1,4 +1,5 @@
 module PureSeq
+using Compat
 
 include("PoissonRegression.jl")
 include("ReferenceContigs.jl")
