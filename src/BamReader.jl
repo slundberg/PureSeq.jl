@@ -15,7 +15,7 @@ function BamReader(bamFileName::ASCIIString, readOrientation, contigs)
     f = GZip.open(bamFileName)
 
     # make sure this is a BAM file
-    code = read(f, Uint8, 4)
+    code = read(f, UInt8, 4)
     @assert code == b"BAM\1"
 
     # get through the header data
@@ -27,7 +27,7 @@ function BamReader(bamFileName::ASCIIString, readOrientation, contigs)
     @assert n_ref == contigs.count
     for j in 1:n_ref
         l_name = read(f, Int32)
-        refName = convert(ASCIIString, read(f, Uint8, l_name)[1:end-1]) # ignore the null terminator
+        refName = convert(ASCIIString, read(f, UInt8, l_name)[1:end-1]) # ignore the null terminator
         l_ref = read(f, Int32)
         @assert l_ref == contigs.sizes[j]
         @assert refName == contigs.names[j]
