@@ -78,7 +78,13 @@ function writeBin(sw::SamWriter, binSize::Int64, binPos::Int64, numReads::Int64,
         
         #write to sw
         for j in 1:length(indices)
-            writeRead(sw, binSize*(binPos-1)+indices[j], FLAG)
+            pos = binSize*(binPos-1)+indices[j]
+            try
+                writeRead(sw, pos, FLAG)
+            catch e
+                println("Caught an error $e")
+                println("This happened at $pos")
+            end
         end
     end
 end
